@@ -16,7 +16,7 @@ import java.util.Stack;
  * @author SanZer0
  *
  */
-public class PartOne {
+public class PartTwo {
 
 	/**
 	 * @param args
@@ -77,13 +77,19 @@ public class PartOne {
 		}
 		
 		//do the actions
+		//this time use an extra stack to retain the order
+		Stack<Character> extra = new Stack<>();
 		while(!moveLines.isEmpty()) {
 			String[] command = moveLines.remove().split(" ");
 			int amount = Integer.parseInt(command[1]);
 			int from = Integer.parseInt(command[3]);
 			int to = Integer.parseInt(command[5]);
+			//use the extra step to retain order
 			for(int i = 0; i < amount; i++) {
-				stacks.get(to - 1).push(stacks.get(from - 1).pop());
+				extra.push(stacks.get(from - 1).pop());
+			}
+			for(int i = 0; i < amount; i++) {
+				stacks.get(to - 1).push(extra.pop());
 			}
 			printVisual(columnCount, stacks);
 		}
