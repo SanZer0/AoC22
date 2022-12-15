@@ -50,11 +50,25 @@ public class PartOne {
 				currentDir.SetSize(currentDir.GetSize() + Integer.parseInt(line[0]));
 			}
 		}
-		printTree(tree);
-		System.out.println();
-		propagateSizes(tree);
-		System.out.println(sumNodesUnderSize(100000, tree));
 		sc.close();
+		//printTree(tree);
+		//System.out.println();
+		propagateSizes(tree);
+		//System.out.println(sumNodesUnderSize(100000, tree));
+		
+		//Part Two
+		int diskSpace = 70000000;
+		int neededSpace = 30000000;
+		int totalUsedSpace = tree.GetRoot().GetData().GetSize();
+		int spaceToFree = neededSpace - (diskSpace - totalUsedSpace);
+		Queue<Node<Directory>> dirsOverNeeded = findNodesOverSize(spaceToFree, tree);
+		Node<Directory> best = dirsOverNeeded.remove();
+		for(Node<Directory> next: dirsOverNeeded) {
+			if(best.GetData().GetSize() > next.GetData().GetSize()) {
+				best = next;
+			}
+		}
+		System.out.println(best.GetData().GetSize());
 	}
 	//add the sizes of child nodes(and further) to the parent node
 	public static void propagateSizes(Tree<Directory> t) {
@@ -82,11 +96,27 @@ public class PartOne {
 			currentNode = list.remove();
 			currentNode.GetChilds().forEach(child -> list.add(child));
 			if(currentNode.GetData().GetSize() <= size) {
-				System.out.println(currentNode.GetData().GetName() + " has size of " + currentNode.GetData().GetSize());
+				//System.out.println(currentNode.GetData().GetName() + " has size of " + currentNode.GetData().GetSize());
 				totalSize += currentNode.GetData().GetSize();
 			}
 		}
 		return totalSize;
+	}
+	
+	public static Queue<Node<Directory>> findNodesOverSize(int size, Tree<Directory> tree) {
+		Queue<Node<Directory>> list = new LinkedList<Node<Directory>>();
+		Queue<Node<Directory>> approved = new LinkedList<Node<Directory>>();
+		Node<Directory> currentNode = tree.GetRoot();
+		list.add(currentNode);
+		while(!list.isEmpty()) {
+			currentNode = list.remove();
+			currentNode.GetChilds().forEach(child -> list.add(child));
+			if(currentNode.GetData().GetSize() >= size) {
+				//System.out.println(currentNode.GetData().GetName() + " has size of " + currentNode.GetData().GetSize());
+				approved.add(currentNode);
+			}
+		}
+		return approved;
 	}
 	//Print the tree
 	public static void printTree(Tree<Directory> t) {
