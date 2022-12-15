@@ -5,6 +5,8 @@ package std;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Scanner;
 
 import std.Tree.Node;
@@ -48,37 +50,55 @@ public class PartOne {
 				currentDir.SetSize(currentDir.GetSize() + Integer.parseInt(line[0]));
 			}
 		}
-		//PrintTree(tree);
-		PropagateSizes(tree);
-		System.out.println(tree.GetRoot().GetData().GetSize());
+		printTree(tree);
+		System.out.println();
+		propagateSizes(tree);
+		System.out.println(sumNodesUnderSize(100000, tree));
 		sc.close();
 	}
-	public static void PropagateSizes(Tree<Directory> t) {
-		PropagateSizes(t.GetRoot());
+	//add the sizes of child nodes(and further) to the parent node
+	public static void propagateSizes(Tree<Directory> t) {
+		propagateSizes(t.GetRoot());
 	}
-	
-	public static void PropagateSizes(Node<Directory> t) {
+	public static void propagateSizes(Node<Directory> t) {
 		Directory dir = t.GetData();
 		int tempSize = 0;
 		for(Node<Directory> n: t.GetChilds()) {
-			PropagateSizes(n);
+			propagateSizes(n);
 			tempSize += n.GetData().GetSize();
 		}
 		dir.SetSize(dir.GetSize() + tempSize);
 		t.SetData(dir); 
 	}
 	
+	//count the amount of nodes with a given maximum size
+	public static int sumNodesUnderSize(int size, Tree<Directory> tree) {
+	//keine Rekursion
+		int totalSize = 0;
+		Queue<Node<Directory>> list = new LinkedList<Node<Directory>>();
+		Node<Directory> currentNode = tree.GetRoot();
+		list.add(currentNode);
+		while(!list.isEmpty()) {
+			currentNode = list.remove();
+			currentNode.GetChilds().forEach(child -> list.add(child));
+			if(currentNode.GetData().GetSize() <= size) {
+				System.out.println(currentNode.GetData().GetName() + " has size of " + currentNode.GetData().GetSize());
+				totalSize += currentNode.GetData().GetSize();
+			}
+		}
+		return totalSize;
+	}
 	//Print the tree
-	public static void PrintTree(Tree<Directory> t) {
-		PrintNode(t.GetRoot());
+	public static void printTree(Tree<Directory> t) {
+		printNode(t.GetRoot());
 	}
 	
-	public static void PrintNode(Node<Directory> n) {
+	public static void printNode(Node<Directory> n) {
 		System.out.print(n.GetData().GetName());
 		if(!n.GetChilds().isEmpty()) {
 			System.out.print("(");
 			n.GetChilds().forEach(child -> {
-				PrintNode(child);
+				printNode(child);
 				System.out.print(",");
 			});
 			System.out.print(")");			
