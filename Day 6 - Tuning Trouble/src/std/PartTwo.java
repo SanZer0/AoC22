@@ -10,7 +10,7 @@ import java.io.IOException;
  * @author SanZer0
  *
  */
-public class PartOne {
+public class PartTwo {
 
 	/**
 	 * @param args
