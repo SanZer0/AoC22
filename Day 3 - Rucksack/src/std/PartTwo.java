@@ -42,6 +42,7 @@ public class PartTwo {
 				}
 			}
 		}
+		sc.close();
 		System.out.println("Total priorities are " + sum);
 
 	}
