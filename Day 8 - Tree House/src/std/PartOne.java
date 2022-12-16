@@ -53,7 +53,7 @@ public class PartOne {
 			}
 			System.out.println();
 		}
-		
+		sc.close();
 		//now to the task
 		//top side
 		int treeCount = 0;
@@ -96,7 +96,45 @@ public class PartOne {
 			}
 		}
 		System.out.println("Insgesamt " + treeCount + " Bäume werden gesehen");
-		sc.close();
+		
+		//Part Two
+		int highestScore = 0;
+		for(int i = 0; i < noColumns; i++) {
+			for(int j = 0; j <= row; j++) {
+				//look at a single tree
+				int treeHeight = graph.get(i).get(j);
+				int dist1 = 0, dist2 = 0, dist3 = 0, dist4 = 0;
+				for(int a = i + 1; a < noColumns; a++) {
+					dist1++;
+					if(graph.get(a).get(j) >= treeHeight) {
+						break;
+					}
+				}
+				for(int b = i - 1; b >= 0; b--) {
+					dist2++;
+					if(graph.get(b).get(j) >= treeHeight) {	
+						break;
+					}
+				}
+				for(int c = j + 1; c <= row; c++) {
+					dist3++;
+					if(graph.get(i).get(c) >= treeHeight) {
+						break;
+					}
+				}
+				for(int d = j - 1; d >= 0; d--) {
+					dist4++;
+					if(graph.get(i).get(d) >= treeHeight) {
+						break;
+					}
+				}
+				int scenicScore = dist1 * dist2 * dist3 * dist4;
+				if(scenicScore > highestScore) {
+					highestScore = scenicScore;
+				}
+			}
+		}
+		System.out.println("The best tree has a score of " + highestScore);
 	}
 
 }
