@@ -43,7 +43,7 @@ public class Monkey {
 		itemQueue.add(item);
 	}
 	//All the stuff that happens when throwing an item
-	public void ThrowItem() {
+	public void ThrowItem(long supermod) {
 		currentItem = itemQueue.remove();
 		long worryLevel = currentItem.GetWorryLevel();
 		long factor = 0;
@@ -53,14 +53,13 @@ public class Monkey {
 			factor = Integer.parseInt(operation[2]);
 		}
 		switch(operation[1]) {
-			case "*": 	worryLevel *= factor; 
+			case "*": 	worryLevel = worryLevel * factor % supermod; 
 					break;
-			case "+":	worryLevel += factor;
+			case "+":	worryLevel = worryLevel + factor % supermod;
 					break;
 			default: break;
-			
 		}
-		worryLevel = worryLevel / 3;
+		//worryLevel = worryLevel / 3;
 		currentItem.SetWorryLevel(worryLevel);
 		if(worryLevel % divisible == 0) {
 			monkeys.get(trueThrow).GiveItem(currentItem);

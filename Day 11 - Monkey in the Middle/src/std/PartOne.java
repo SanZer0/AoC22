@@ -5,6 +5,7 @@ package std;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,6 +26,7 @@ public class PartOne {
 		File file = new File("input.txt");
 		Scanner sc = new Scanner(file);
 		
+		long supermod = 1;
 		List<Monkey> monkeys = new LinkedList<Monkey>();
 		Monkey currentMonkey = null;
 		while(sc.hasNextLine()) {
@@ -44,7 +46,9 @@ public class PartOne {
 			} else if(line[0].equals("Operation")) {
 				currentMonkey.SetOperation(Arrays.copyOfRange(line, 3, 6));
 			} else if(line[0].equals("Test")) {
-				currentMonkey.SetDivisor(Integer.parseInt(line[3]));
+				int modulo = Integer.parseInt(line[3]);
+				supermod *= modulo;
+				currentMonkey.SetDivisor(modulo);
 			} else if(line[0].equals("If")) {
 				if(line[1].equals("true")) {
 					currentMonkey.SetTrueThrow(Integer.parseInt(line[5]));
@@ -56,11 +60,11 @@ public class PartOne {
 		}
 		sc.close();
 		//do 20 rounds of this
-		for(int i = 0; i < 20; i++) {
+		for(int i = 0; i < 10000; i++) {
 			for(int j = 0; j < monkeys.size(); j++) {
 				Monkey current = monkeys.get(j);
 				while(current.HasItems()) {
-					current.ThrowItem();
+					current.ThrowItem(supermod);
 				}
 			}
 			//after each round print the monkeys:
@@ -87,7 +91,7 @@ public class PartOne {
 			}
 		}
 		System.out.println("Highest: " + highest + "  Second highest: " + secondHighest);
-		System.out.println("Monkey business of " + (highest * secondHighest));
+		System.out.println("Monkey business of " + (BigInteger.valueOf(highest).multiply(BigInteger.valueOf(secondHighest))));
 	}
 
 }
