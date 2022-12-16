@@ -35,19 +35,29 @@ public class PartOne {
 				add = Integer.parseInt(command[1]);
 			}
 			while(progress > 0) {
+				//draw pixel
 				cycle++;
+				if(cycle % 40 == 1 && cycle != 1) {
+					System.out.println();
+				}
+				if(cycle % 40 >= X && cycle % 40 <= X + 2) {
+					System.out.print("#");
+				} else {
+					System.out.print(".");
+				}
+				
 				progress--;
 				if((cycle + 20) % 40 == 0) {
 					//
 					int signalStrength = cycle * X;
-					System.out.println(cycle +" * "+ X + " = " +signalStrength);
+					//System.out.println(cycle +" * "+ X + " = " +signalStrength);
 					sumSignalStrength += signalStrength;
 				}
 			}
 			X += add;
 			add = 0;
 			if(cycle > 220) {
-				System.out.println("Finished with " + sumSignalStrength);
+				//System.out.println("Finished with " + sumSignalStrength);
 			}
 		}
 	}
