@@ -85,9 +85,11 @@ public class PartOne {
 				y_sizes[0] = c.y;
 			}
 			if(c.y > y_sizes[1]) { //max y
-				y_sizes[1] = c.y + 1;
+				y_sizes[1] = c.y + 1 + 1;
 			}
 		}
+		x_sizes[0] = x_sizes[0] - 300;
+		x_sizes[1] = x_sizes[1] + 300;
 		//fill up the map
 		for(int i = x_sizes[0]; i <= x_sizes[1]; i++) {//x values from a - 500 - b
 			ArrayList<Character> list = new ArrayList<Character>();
@@ -95,15 +97,17 @@ public class PartOne {
 				for(int j = y_sizes[0]; j <= y_sizes[1]; j++) { //y values from 0 to idk
 				if(i == 500 && j == 0) {
 					list.add('+');
+				} else if (j == y_sizes[1]) {
+					list.add('#');
 				} else {
-					list.add('.');					
+					list.add('.');			
 				}
 			}
 		}
 		
 		//put the coordinates into the map
 		for(Coords c: coordinates) {
-			System.out.println("x = " + c.x + "y = " + c.y);
+			//System.out.println("x = " + c.x + "y = " + c.y);
 			map.get(c.x - x_sizes[0]).set(c.y, '#');
 		}
 		/*
@@ -128,6 +132,10 @@ public class PartOne {
 	public static boolean dropSand(int[] sandStart, List<List<Character>> map, int[] x_sizes, int[] y_sizes) {
 		int x = sandStart[0];
 		int y = sandStart[1];
+		if(map.get(x - x_sizes[0]).get(y) != '+') {
+			System.out.println("Source is blocked");
+			return false;
+		}
 		//System.out.println("X = " + x + " " + "Y = " + y);
 		//System.out.println(x_sizes[0] + " " + y_sizes[0] + " " + y_sizes[1]);
 		while(x > x_sizes[0] && x < x_sizes[1] && y + 1 > y_sizes[0]) {
@@ -164,10 +172,6 @@ public class PartOne {
 		for(int j = y_sizes[0]; j <= y_sizes[1]; j++) {
 			System.out.print(j);
 			for(int i = x_sizes[0]; i <= x_sizes[1]; i++) {
-				if(i == 500 && j == 0) {
-					System.out.print('+');
-					continue;
-				}
 				System.out.print(map.get(i - x_sizes[0]).get(j));
 			}
 			System.out.println();
