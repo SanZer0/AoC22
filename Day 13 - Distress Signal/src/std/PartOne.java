@@ -5,6 +5,8 @@ package std;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.Stack;
 
@@ -21,59 +23,63 @@ public class PartOne {
 	public static void main(String[] args) throws FileNotFoundException {
 		File file = new File("input.txt");
 		Scanner sc = new Scanner(file);
-		String line1 = null;
-		String line2 = null;
-		int indices = 0;
-		int indicesSum = 0;
-		int inOrder = 0;
-		int outOfOrder = 0;
-		int noDecision = 0;
+		List<String> liste = new ArrayList<String>();
 		while(sc.hasNextLine()) {
 			String nextLine = sc.nextLine();
 			if(nextLine.trim().isEmpty()) { //announcement of a new pair
-				line1 = null;
-				line2 = null;
-			} else if(line1 == null) {//package1
-				line1 = nextLine;
-			} else if(line2 == null) {//package2
-				line2 = nextLine;
-				indices++;
-			}
-			//we don't have two packets to compare yet
-			if(line2 == null) {
 				continue;
 			}
-			System.out.println(line1);
-			System.out.println(line2);
-			int order = inOrder(line1, line2);
-			if(order == - 1) {
-				outOfOrder++;
-				System.out.println(indices+"----------");
-			} else if(order == 1) {
-				inOrder++;
-				indicesSum += indices;
-				System.out.println(indices+"++++++++++");
-			} else if(order == 0) {
-				noDecision++;
+			int pos = 0;
+			for(int i = 0; i < liste.size(); i++) {
+				if(inOrder(nextLine, liste.get(i)) == 1) {
+					System.out.println(nextLine +"<"+liste.get(i));
+					System.out.println("Added " + nextLine);
+					pos = i;
+					break;
+				} 
+				if(i == liste.size() -1) {
+					pos = i+1;
+				}
 			}
+			liste.add(pos, nextLine);
 		}
 		sc.close();
-		System.out.println("In Order: " + inOrder + " Out of Order: " + outOfOrder + " No Decision: " + noDecision);
-		System.out.println("Indices Sum: " + indicesSum);
+		String test1 = "[[2]]";
+		String test2 = "[[6]]";
+		int a = 0;
+		int b = 0;
+		for(int i = 0; i < liste.size(); i++) {
+			if(inOrder(test1, liste.get(i)) == 1) {
+				a = i;
+				break;
+			}
+		}
+		liste.add(a, test1);
+		for(int i = 0; i < liste.size(); i++) {
+			if(inOrder(test2, liste.get(i)) == 1) {
+				b = i;
+				break;
+			}
+		}
+		liste.add(b, test2);
+		
+		for(String s : liste) {
+			System.out.println(s);
+		}
+		System.out.println((a+1) * (b+1));
 	}
 	
 	//Returns 1 if the packages are in order, 
 	//0 if there is no order detected, 
 	//-1 if they are out of order
 	public static int inOrder(String left, String right) {
-		System.out.println(left);
-		System.out.println(right);
-		System.out.println("Compare " + left + " vs " + right);
+		//System.out.println(left);
+		//System.out.println(right);
+		//System.out.println("Compare " + left + " vs " + right);
 		//null cases
 		if((left == null || left.isEmpty()) && right != null && !right.isEmpty()) { //left ran out of items, so in order 
 			//unpack the right side and check again
-			System.out.println("Returning 1 here");
-			new Exception().printStackTrace();
+			//System.out.println("Returning 1 here");
 			return 1;
 			
 			//System.out.println("left side ran out of items");
@@ -81,7 +87,7 @@ public class PartOne {
 		} else if(left != null && !left.isEmpty() && (right == null || right.isEmpty())) {
 			return -1;
 		} else if((left == null || left.isEmpty()) && (right == null || right.isEmpty())) {
-			System.out.println("Returned 0");
+			//System.out.println("Returned 0");
 			return 0;
 		}
 		
@@ -92,7 +98,7 @@ public class PartOne {
 		} else if(!left.isEmpty() && right.isEmpty()) {
 			return -1;
 		} else if(left.isEmpty() && right.isEmpty()) {
-			System.out.println("Returned 0");
+			//System.out.println("Returned 0");
 			return 0;
 		}
 		if(left.charAt(0) == '[' && right.charAt(0) == '[') {//list comparison
@@ -111,7 +117,7 @@ public class PartOne {
 				comma = left.length();
 			}
 			String newLeft = "[" + left.substring(0, comma) + "]" + left.substring(comma);
-			System.out.println("Changed to " +newLeft);
+			//System.out.println("Changed to " +newLeft);
 			return inOrder(newLeft, right);
 		} else if(right.charAt(0) != '[') { //pack it up
 			int comma = right.indexOf(',');
@@ -119,7 +125,7 @@ public class PartOne {
 				comma = right.length();
 			}
 			String newRight = "[" + right.substring(0, comma) + "]" + right.substring(comma);
-			System.out.println("Changed to " +newRight);
+			//System.out.println("Changed to " +newRight);
 			return inOrder(left, newRight);
 			
 		}
