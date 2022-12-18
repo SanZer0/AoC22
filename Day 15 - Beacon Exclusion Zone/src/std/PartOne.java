@@ -5,6 +5,7 @@ package std;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -22,7 +23,7 @@ public class PartOne {
 	public static void main(String[] args) throws FileNotFoundException {
 		File file = new File("input.txt");
 		Scanner sc = new Scanner(file);
-		int searchPosition = 2000000;
+		int searchPosition = 10;
 		List<Sensor> sensors = new ArrayList<Sensor>();
 		List<Beacon> beacons = new ArrayList<Beacon>();
 		while(sc.hasNextLine()) {
@@ -39,6 +40,55 @@ public class PartOne {
 		}
 		sc.close();
 		//calculate the ranges in line 2000000
+		List<Range> ranges = calculateRange(searchPosition, sensors);
+		combineRanges(ranges);
+		partOne(ranges, beacons, searchPosition);
+		
+		partTwo(sensors, beacons);
+	}
+	
+	static void partTwo(List<Sensor> sensors, List<Beacon> beacons) {
+		int max = 4000000;
+		int missingNo = 0;
+		int y = 0;
+		for(int i = 0; i < max; i++) {
+			List<Range> ranges = calculateRange(i, sensors);
+			combineRanges(ranges);
+			cutRanges(ranges, 0, max);
+			if(partOne(ranges, beacons, i) == max) {
+				System.out.println(i);
+				for(Range r: ranges) {
+					if(r.startX != 0) {
+						missingNo = r.startX - 1;
+						y = i;
+					}
+					System.out.println(missingNo);
+					System.out.println(r);
+				}
+			}	
+		}
+		System.out.println(new BigInteger(4000000+"").multiply(new BigInteger(missingNo+"")).add(new BigInteger(y+"")));
+		
+	}
+	
+	static void cutRanges(List<Range> ranges, int min, int max) {
+		for(Range r : ranges) {
+			if(r.startX < min) {
+				r.startX = min;
+			}
+			if(r.endX > max) {
+				r.endX = max;
+			}
+			if(r.startX > max) {
+				ranges.remove(r);
+			}
+			if(r.endX < min) {
+				ranges.remove(r);
+			}
+		}
+	}
+	
+	static List<Range> calculateRange(int searchPosition, List<Sensor> sensors) {
 		List<Range> ranges = new ArrayList<>();
 		for(Sensor sense : sensors) {
 			int yDiff = Sensor.norm(sense.getY() - searchPosition);
@@ -58,10 +108,10 @@ public class PartOne {
 				//System.out.println(newRange);
 			}	
 		}
-		for(Range r : ranges) {
-			System.out.println(r);
-		}
-		//System.out.println(ranges.size());
+		return ranges;
+	}
+	
+	static List<Range> combineRanges(List<Range> ranges) {
 		for(int i = 0; i < ranges.size(); i++) {
 			Range r = ranges.get(i);
 			for(int j = i+1; j < ranges.size(); j++) {
@@ -73,15 +123,19 @@ public class PartOne {
 				} 
 			}
 		}
+		return ranges;
+	}
+	
+	static int partOne(List<Range> ranges, List<Beacon> beacons, int searchPosition) {
 		int size = 0;
 		for(Range r: ranges) {
-			System.out.println(r);
+			//System.out.println(r);
 			size += r.getSize();
 		}
 		int beaconCount = 0;
 		for(Beacon b: beacons) {
 			//System.out.println(b);
-			System.out.println(b);
+			//System.out.println(b);
 			for(Range r : ranges) {
 				if(r.overlaps(new Range(b.x, b.x)) && b.y == searchPosition) {
 					beaconCount++;
@@ -89,9 +143,10 @@ public class PartOne {
 				}
 			}
 		}
-		System.out.println(beaconCount);
-		System.out.println(size - beaconCount);
-		//mathe stuff und anzahl der beacons in der line abziehen
+		//System.out.println(beaconCount);
+		//System.out.println(size - beaconCount);
+		//ALERT: only for part two
+		return size;
 	}
 	
 }
