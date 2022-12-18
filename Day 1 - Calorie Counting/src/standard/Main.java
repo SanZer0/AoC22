@@ -17,7 +17,7 @@ public class Main {
 	 * @throws FileNotFoundException 
 	 */
 	public static void main(String[] args) throws FileNotFoundException {
-		File file = new File("input.txt");
+		File file = new File("input2.txt");
 		Scanner sc = new Scanner(file);
 		int elfCounter = 1;
 		int calorieCounter = 0;
