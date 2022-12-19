@@ -74,6 +74,7 @@ public class Main {
 		//}
 		
 		System.out.println("Max Flow is: " + calcFlow(30, startValve, new ArrayList<Valve>()));
+		System.out.println(calcFlow2(26, 26, startValve, startValve, new ArrayList<Valve>()));
 
 	}
 	
@@ -109,10 +110,6 @@ public class Main {
 		if(minutesLeft <= 0) {
 			return 0;
 		}
-		State state = new State(minutesLeft, standpoint, openedValves);
-		if(cache.get(state) != null) { //value already calculted
-			return cache.get(state);
-		}
 		List<Integer> values = new ArrayList<Integer>();
 		//go to a valve and open it
 		for(Valve v: valves) {
@@ -131,27 +128,80 @@ public class Main {
 			opened.add(v); //opened the valve
 			int flow = calcFlow(minutesLeftAfterOpening, v, opened);
 			int flowFromOpening = minutesLeftAfterOpening * v.getFlowRate();
-			//System.out.println("Went from " + standpoint.getName() + " to " + v.getName());
-			//System.out.println("Opened " + v.getName() + ". " + minutesLeftAfterOpening + " minutes left, adding " + flowFromOpening);
-			//System.out.println("Found a max flow of " + flow);
-			//for(Valve a : opened) {
-			//	System.out.print(a.getName() + " " + v.getName());
-			//}
 			values.add(flow + flowFromOpening);
-			//System.out.println();
 		}
 		
 		
 		int max = 0;
-		//for(Integer a : values) {
-		//	System.out.println(a);
-		//}
 		if(!values.isEmpty()) {
 			max = Collections.max(values);
 		}
-		//System.out.println(max);
-		//that's all
-		cache.put(state, max);
+		return max;
+	}
+	
+	public static int calcFlow2(int minutesHuman, int minutesElephant, Valve standpointH, Valve standpointE, List<Valve> openedValves) {
+		//System.out.println(minutesHuman + " " + minutesElephant);
+		if(openedValves.size() == valveAmountOverZero) {//eveything is opened, just calculate the rest
+			return 0;
+		}
+		
+		if(minutesHuman <= 0 && minutesElephant <= 0) {
+			return 0;
+		}
+		List<Integer> values = new ArrayList<Integer>();
+		//choose a valve for the human and open it
+		//go one by one, start with the one that has more minutes
+		if(minutesHuman >= minutesElephant) {
+			for(Valve v: valves) { //choose a valve for the human
+				var opened = new ArrayList<Valve>(openedValves);
+				if(v.getFlowRate() == 0) {
+					continue;
+				}
+				if(openedValves.contains(v)) {
+					continue;
+				}
+				//open it as a human
+				var minutesLeftAfterOpening = minutesHuman - distanceMap.get(standpointH).get(v) - 1;
+				if(minutesLeftAfterOpening < 1) {
+					continue;
+				}
+				int flowFromOpening = minutesLeftAfterOpening * v.getFlowRate(); //calculate the added flow
+				opened.add(v); //opened the valve
+				//choose the next valve
+				//System.out.println("Human opened " + v.getName());
+				int flow = calcFlow2(minutesLeftAfterOpening, minutesElephant, v, standpointE, opened);
+				values.add(flow + flowFromOpening);
+				//int flow = calcFlow(minutesLeftAfterOpening, v, opened);
+			}
+		} else { //copy paste for elephant
+			for(Valve v: valves) { //choose a valve for the human
+				var opened = new ArrayList<Valve>(openedValves);
+				if(v.getFlowRate() == 0) {
+					continue;
+				}
+				if(openedValves.contains(v)) {
+					continue;
+				}
+				//open it as a human
+				var minutesLeftAfterOpening = minutesElephant - distanceMap.get(standpointE).get(v) - 1;
+				if(minutesLeftAfterOpening < 1) {
+					continue;
+				}
+				int flowFromOpening = minutesLeftAfterOpening * v.getFlowRate(); //calculate the added flow
+				opened.add(v); //opened the valve
+				//choose the next valve
+				//System.out.println("Elephant opened " + v.getName());
+				int flow = calcFlow2(minutesHuman, minutesLeftAfterOpening, standpointH, v, opened);
+				values.add(flow + flowFromOpening);
+				//int flow = calcFlow(minutesLeftAfterOpening, v, opened);
+			}
+		}
+		
+		
+		int max = 0;
+		if(!values.isEmpty()) {
+			max = Collections.max(values);
+		}
 		return max;
 	}
 
