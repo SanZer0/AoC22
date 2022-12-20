@@ -217,7 +217,7 @@ public class Main {
 					count++;					
 				}
 			}
-			System.out.println(count);
+			//System.out.println(count);
 		}
 		System.out.println(count);
 	}
@@ -262,7 +262,7 @@ public class Main {
 	}
 	static boolean touchesAir(Cube c) {
 		if(airBlocks.contains(c)) {//is air
-			System.out.println("Block at " + c.x + " " + c.y + " " + c.z + " touches Air");
+			//System.out.println("Block at " + c.x + " " + c.y + " " + c.z + " touches Air");
 			return true;
 		} else if(cubeList.contains(c)) {//isLava
 			return false;
@@ -278,7 +278,9 @@ public class Main {
 			}
 			visited.add(check);
 			if(airBlocks.contains(check)) {//is air
-				airBlocks.add(c);
+				for(Cube cube: visited) {
+					airBlocks.add(cube);
+				}
 				return true;
 			}
 			cubeQueue.add(new Cube(check.x + 1, check.y, check.z));
