@@ -13,6 +13,8 @@ public class Cube {
 	public int x;
 	public int y;
 	public int z;
+	public boolean isLava = false;
+	public boolean touchesAir = false;
 	/**
 	 * 
 	 */
