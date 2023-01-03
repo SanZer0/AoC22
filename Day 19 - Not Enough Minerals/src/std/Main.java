@@ -33,10 +33,21 @@ public class Main {
 		int[] robots = {1, 0, 0, 0};
 		int[] minerals = {0, 0, 0, 0};
 		int quality = 0;
+		int partTwo = 3;
+		int quality2 = 1;
+		int result = 0;
 		for(Blueprint bp : blueprintList) {
-			quality += calculateQuality(bp, 24) * bp.blueprintNumber;
+			result = calculateQuality(bp, 32);
+			quality += result * bp.blueprintNumber;
+			quality2 *= result;
+			partTwo--;
+			System.out.println(result);
+			if(partTwo == 0) {
+				break;
+			}
 		}
-		System.out.println(quality);
+		//System.out.println(quality);
+		System.out.println(quality2);
 	}
 	
 	public static void setInputFile(String inputFile) {
@@ -69,6 +80,15 @@ public class Main {
 		queue.add(new State(bp, minutes));
 		while(!queue.isEmpty()) {
 			State currentState = queue.remove();
+			//this small optimization does god's work, just cut off the branches that can't be good anyway
+			int globalMax = currentState.minerals[3];
+			for(int i = currentState.minutes; i > 0; i--) {
+				globalMax += currentState.robots[3] + (currentState.minutes-i);
+			}
+			if(globalMax <= maxGeodes) {
+				continue;
+			}
+			
 			if(currentState.minutes <= 0) {
 				maxGeodes = Math.max(maxGeodes, currentState.getGeodes());
 				continue;
@@ -149,6 +169,9 @@ public class Main {
 				queue.add(stateNew);
 			}
 			//just collect until the end
+			if(!stateNew.shouldConstructRobot(0) && !stateNew.shouldConstructRobot(1) && !stateNew.shouldConstructRobot(2)) {
+				continue;
+			}
 			while(currentState.minutes > 0) {
 				currentState.minutes--;
 				currentState.minerals[0] += currentState.robots[0];
