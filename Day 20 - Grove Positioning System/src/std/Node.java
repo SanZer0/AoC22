@@ -9,7 +9,7 @@ package std;
  */
 public class Node {
 
-	int value;
+	long value;
 	int position;
 	Node previous;
 	Node next;
@@ -17,7 +17,7 @@ public class Node {
 	/**
 	 * 
 	 */
-	public Node(int value, int position) {
+	public Node(long value, int position) {
 		this.value = value;
 		this.position = position;
 	}
@@ -37,7 +37,7 @@ public class Node {
 		return next;
 	}
 	
-	public int getValue() {
+	public long getValue() {
 		return value;
 	}
 	
