@@ -69,9 +69,10 @@ public class Main {
 				}
 				commandPos--;
 				System.out.println(commandPos);
-				drawMap();
+				//drawMap();
 			}
 			commandPos++;
+			drawMap();
 		}
 		System.out.println("Final Row: " + (posY + 1) + " Final Column: " + (posX + 1) + " Rot: " + rotation);
 		System.out.println((posX+1) * 4 + (posY + 1) * 1000 + rotation);
@@ -98,57 +99,92 @@ public class Main {
 	}
 	
 	public static boolean stepOn(int x, int y) {
-		if(y < 0) {
-			y = map.size() - 1;
+		//let's hardcode
+		int tempRotation = rotation;
+		if(y == -1 && x >= 50 && x <= 99 && rotation == 3) { //1
+			y = x + 100;
+			x = 0;
+			tempRotation = 0;
 		}
-		if(y > map.size() - 1) {
+		if(y == -1 && x >= 100 && rotation == 3) { //2
+			x = x-100;
+			y = 199;
+			tempRotation = 3;
+		}
+		if(x == 150 && y < 50 && rotation == 0) { //3
+			x = 99;
+			y = (49 - y) + 100;
+			tempRotation = 2;
+		}
+		if(x >= 100 && x < 150 && y == 50 && rotation == 1) {//4
+			y = x - 50;
+			x = 99;
+			tempRotation = 2;
+		}
+		if(x == 100 && y >= 50 && y < 100 && rotation == 0) {//5
+			x = y + 50;
+			y = 49;
+			tempRotation = 3;
+		}
+		if(x == 100 && y >= 100 && y < 150 && rotation == 0) {//6
+			x = 149;
+			y = 49 - (y - 100);
+			tempRotation = 2;
+		}
+		if(y == 150 && x >= 50 && x < 100 && rotation == 1) {//7
+			y = x - 50 + 150;
+			x = 49;
+			tempRotation = 2;
+		}
+		if(x == 50 && y >= 150 && rotation == 0) {//8
+			x = y - 150 + 50;
+			y = 149;
+			tempRotation = 3;
+		}
+		if(y == 200 && x < 50 && rotation == 1) {//9
+			x = x + 100;
 			y = 0;
+			tempRotation = 1;
 		}
-		String line = map.get(y);
-		int lineLength = line.length();
-		//OutofBounds-Check
-		System.out.println("Moving to x " + x);
-		if(rotation == 2 && (x < 0 || map.get(y).charAt(x) == ' ')) {
-			int linePos = lineLength - 1;
-			while(line.charAt(linePos) == ' ') {
-				linePos--;
-			}
-			x = linePos;
+		if(x == -1 && y >= 150 && rotation == 2) {//10
+			x = y - 150 + 50;
+			y = 0;
+			tempRotation = 1;
 		}
-		if(rotation == 0 && (x > lineLength - 1 || map.get(y).charAt(x) == ' ')) {
-			int linePos = 0;
-			while(line.charAt(linePos) == ' ') {
-				linePos++;
-			}
-			x = linePos;
+		if(x == -1 && y >= 100 && y < 150 && rotation == 2) {//11
+			x = 50;
+			y = 49 - (y - 100);
+			tempRotation = 0;
 		}
-		int lineAmount = map.size();
-		if(rotation == 3 && (y < 0 || x > map.get(y).length() || map.get(y).charAt(x) == ' ')) {
-			int linePos = lineAmount - 1;
-			while(map.get(linePos).length() < x || map.get(linePos).charAt(x) == ' ') {
-				linePos--;
-			}
-			y = linePos;
-			System.out.println("Y is " + y);
+		if(y == 99 && x < 50 && rotation == 3) {//12
+			y = x + 50;
+			x = 50;
+			tempRotation = 0;
 		}
-		if(rotation == 1 && (y > lineAmount - 1 || x > map.get(y).length() || map.get(y).charAt(x) == ' ')) {
-			int linePos = 0;
-			while(map.get(linePos).charAt(x) == ' ') {
-				linePos++;
-			}
-			y = linePos;
+		if(x == 49 && y >= 50 && y < 100 && rotation == 2) {//13
+			x = y - 50;
+			y = 100;
+			tempRotation = 1;
 		}
+		if(x == 49 && y < 50 && rotation == 2) {//14
+			x = 0;
+			y = (49 - y) + 100;
+			tempRotation = 0;
+		}
+		
 		if(map.get(y).charAt(x) == '#') {
 			//don't move
 			return false;
 		} else if (map.get(y).charAt(x) == '.') {
 			posX = x;
 			posY = y;
+			rotation = tempRotation;
 			System.out.println("Moved to X: " + x + " Y: " + y);
 			 return true;
 		} else {
 			System.out.println("Error: something went wrong with moving");
-			System.out.println(map.get(y).charAt(x));
+			System.out.println("Tried moving to X: " + x + " Y: " + y + " from X: " + posX + " Y: " +  posY);
+			System.exit(1);
 			return true;
 		}
 	}
