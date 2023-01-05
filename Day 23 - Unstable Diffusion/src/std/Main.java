@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 /**
@@ -38,20 +39,21 @@ public class Main {
 			y++;
 		}
 		sc.close();
-		elvePositions.forEach(a -> System.out.println(a));
 		int direction = 0;
-		for(int i = 0; i < 10; i++) {
-			drawMap();
-			moveElves(direction);
+		int moved = 1;
+		int rounds = 0;
+		while(moved != 0) {
+			//drawMap();
+			moved = moveElves(direction);
+			System.out.println("Moved " + moved + " elves");
 			direction = (direction + 1) % 4;
-			System.out.println("New positions:");
-			elvePositions.forEach(a -> System.out.println(a));
+			rounds++;
 		}
-		drawMap();
-		System.out.println(getBlankSquares());
+		//drawMap();
+		System.out.println("blanks: " + getBlankSquares() + " rounds: " + rounds);
 	}
 	
-	public static void moveElves(int direction) {
+	public static int moveElves(int direction) {
 		HashMap<Coordinate, Coordinate> moveTo = new HashMap<>();
 		elvePositions.forEach(coords -> {
 				boolean[] proposeDirection = new boolean[4];
@@ -87,16 +89,22 @@ public class Main {
 		);
 		
 		Collection<Coordinate> values = moveTo.values();
-		moveTo.forEach((oldCoords, newCoords) -> {
-			System.out.println(oldCoords + " moved to " + newCoords);
-			if(Collections.frequency(values, newCoords) > 1) {
-				System.out.println("Multiple elves try to move to " + newCoords);
-			} else {
-				Coordinate elve = elvePositions.get(elvePositions.indexOf(oldCoords));
-				elve.setX(newCoords.getX());
-				elve.setY(newCoords.getY());
-			}
-		});
+		int elvesMoved = 0;
+		//made via opengpt
+		for (Map.Entry<Coordinate, Coordinate> entry : moveTo.entrySet()) {
+		  Coordinate oldCoords = entry.getKey();
+		  Coordinate newCoords = entry.getValue();
+		
+		  if (Collections.frequency(values, newCoords) > 1) {
+		    //System.out.println("Multiple elves try to move to " + newCoords);
+		  } else {
+		    Coordinate elve = elvePositions.get(elvePositions.indexOf(oldCoords));
+		    elve.setX(newCoords.getX());
+		    elve.setY(newCoords.getY());
+		    elvesMoved++;
+		  }
+		}
+		return elvesMoved;
 	}
 	
 	public static boolean[] checkDirections(int direction, int x, int y) {
