@@ -68,7 +68,16 @@ public class main {
 			}
 		}
 		
-		System.out.println(findLeastStepsWithBFS());
+		int stepsFirstWay = findLeastStepsWithBFS(0, true);
+		int loopFirst = stepsFirstWay % loopSize;
+		int stepsSecondWay = findLeastStepsWithBFS(loopFirst, false);
+		int loopSecond = (loopFirst + stepsSecondWay) % loopSize;
+		int stepsThirdWay = findLeastStepsWithBFS(loopSecond, true);
+		
+		System.out.print("Needed " + stepsFirstWay + " steps for first way, ");
+		System.out.print("needed " + stepsSecondWay + " steps for second way, ");
+		System.out.println("needed " + stepsThirdWay + " steps for third way. ");
+		System.out.println("So accumulated " + (stepsFirstWay+stepsSecondWay+stepsThirdWay) + " steps");
 
 	}
 	
@@ -113,10 +122,17 @@ public class main {
 		}
 	}
 	
-	public static int findLeastStepsWithBFS() {
+	public static int findLeastStepsWithBFS(int startMap, boolean forward) {
 		int currentX = 1;
-		int currentY = 0;
-		int currentMap = 0;
+		int currentY = 0;			
+		if(forward) {
+			currentX = 1;
+			currentY = 0;
+		} else {
+			currentX = lineLength - 2;
+			currentY = lineCount - 1;
+		}
+		int currentMap = startMap;
 		int currentMinutes = 0;
 		Set<State> visited = new HashSet<>();
 		Queue<State> bfsQueue = new LinkedList<>();
@@ -144,14 +160,17 @@ public class main {
 				}
 			}
 			if(currentY != 0 && maps[nextMap][currentY - 1][currentX].canBeMovedOn()) {//go up
+				if(currentX == 1 && currentY - 1 == 0 && !forward) {
+					return currentMinutes + 1;
+				}
 				State nextState = new State(currentX, currentY - 1, nextMap, currentMinutes + 1);
 				if(!visited.contains(nextState)) {
 					visited.add(nextState);
 					bfsQueue.add(nextState);
 				}
 			}
-			if(maps[nextMap][currentY + 1][currentX].canBeMovedOn()) {//go down
-				if(currentX == lineLength - 2 && currentY + 1 == lineCount - 1) {
+			if(currentY != lineCount - 1 && maps[nextMap][currentY + 1][currentX].canBeMovedOn()) {//go down
+				if(currentX == lineLength - 2 && currentY + 1 == lineCount - 1 && forward) {
 					return currentMinutes + 1;
 				}
 				State nextState = new State(currentX, currentY + 1, nextMap, currentMinutes + 1);
